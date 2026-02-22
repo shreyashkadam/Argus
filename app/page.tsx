@@ -126,6 +126,17 @@ export default function Home() {
             <p className="text-sm text-[hsl(var(--muted-foreground))] leading-relaxed">
               Multi-agent research with adversarial fact-checking
             </p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))] mt-2 opacity-60">
+              by{" "}
+              <a
+                href="https://shreyashkadam.me/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:opacity-100 hover:text-[hsl(var(--foreground))] transition-all"
+              >
+                Shreyash Kadam
+              </a>
+            </p>
           </div>
           <QueryInput onSubmit={handleSubmit} isLoading={isLoading} />
         </div>
