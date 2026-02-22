@@ -12,7 +12,7 @@ type ScrapeResult =
   | { success: false; url: string; error: string; content: "" };
 
 async function scrapeUrlInternal(url: string): Promise<ScrapeResult> {
-  const jinaUrl = `https://r.jina.ai/${encodeURIComponent(url)}`;
+  const jinaUrl = `https://r.jina.ai/${url}`;
   const response = await fetch(jinaUrl, {
     headers: { Accept: "text/markdown", "X-No-Cache": "true" },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),

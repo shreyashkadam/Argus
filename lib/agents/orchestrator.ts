@@ -84,15 +84,31 @@ export async function* runResearchLoop(
       const researcherResult = await runResearcher(state);
       const researcherDuration = Date.now() - researcherStartTime;
 
-      state.claims = researcherResult.claims;
-      state.sources = researcherResult.sources;
-      state.rawScrapedContent = researcherResult.rawScrapedContent;
+      // Merge new claims with existing ones (researcher is told to avoid duplicates)
+      const existingClaimIds = new Set(state.claims.map((c) => c.id));
+      const newClaims = researcherResult.claims.filter(
+        (c) => !existingClaimIds.has(c.id)
+      );
+      state.claims = [...state.claims, ...newClaims];
+
+      // Merge sources
+      const existingSourceUrls = new Set(state.sources.map((s) => s.url));
+      const newSources = researcherResult.sources.filter(
+        (s) => !existingSourceUrls.has(s.url)
+      );
+      state.sources = [...state.sources, ...newSources];
+
+      // Merge scraped content
+      state.rawScrapedContent = {
+        ...state.rawScrapedContent,
+        ...researcherResult.rawScrapedContent,
+      };
       state.researcherNotes = researcherResult.notes;
 
-      for (const claim of researcherResult.claims) {
+      for (const claim of newClaims) {
         yield { type: "claim-added", claim };
       }
-      for (const source of researcherResult.sources) {
+      for (const source of newSources) {
         yield { type: "source-added", source };
       }
 
@@ -139,7 +155,12 @@ export async function* runResearchLoop(
 
       metrics.increment("iterations_completed");
 
-      if (totalClaims > 0 && claimsNeedingWork / totalClaims > 0.3 && state.iterations < state.maxIterations) {
+      const hasMoreIterations = state.iterations < state.maxIterations;
+      const noClaims = totalClaims === 0;
+      const tooManyBadClaims =
+        totalClaims > 0 && claimsNeedingWork / totalClaims > 0.3;
+
+      if (hasMoreIterations && (noClaims || tooManyBadClaims)) {
         continue;
       } else {
         break;
