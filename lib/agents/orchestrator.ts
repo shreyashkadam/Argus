@@ -10,6 +10,7 @@ import {
 import { runPlanner } from "@/lib/agents/planner";
 import { runResearcher } from "@/lib/agents/researcher";
 import { runSkeptic } from "@/lib/agents/skeptic";
+import { generateReport } from "@/lib/agents/report-generator";
 import { ResearcherResult, SkepticResult } from "@/lib/agents/types";
 import { metrics } from "@/lib/telemetry";
 
@@ -179,15 +180,4 @@ export async function* runResearchLoop(
     state.error = error instanceof Error ? error.message : String(error);
     yield { type: "error", message: state.error };
   }
-}
-
-// STUBS
-async function generateReport(state: ResearchState): Promise<FinalReport> {
-  return {
-    title: "Stub Report",
-    summary: "Stub summary",
-    sections: [],
-    overallConfidence: "medium",
-    createdAt: new Date().toISOString(),
-  };
 }
