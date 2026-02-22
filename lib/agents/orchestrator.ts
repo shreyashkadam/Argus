@@ -9,6 +9,7 @@ import {
 } from "@/lib/schemas";
 import { runPlanner } from "@/lib/agents/planner";
 import { runResearcher } from "@/lib/agents/researcher";
+import { runSkeptic } from "@/lib/agents/skeptic";
 import { ResearcherResult, SkepticResult } from "@/lib/agents/types";
 import { metrics } from "@/lib/telemetry";
 
@@ -181,13 +182,6 @@ export async function* runResearchLoop(
 }
 
 // STUBS
-async function runSkeptic(state: ResearchState): Promise<SkepticResult> {
-  return {
-    claims: state.claims,
-    feedback: "Stub skeptic",
-  };
-}
-
 async function generateReport(state: ResearchState): Promise<FinalReport> {
   return {
     title: "Stub Report",
