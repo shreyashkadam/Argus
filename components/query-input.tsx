@@ -4,6 +4,12 @@ import { useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const EXAMPLE_QUERIES = [
+  "What are the real-world risks and benefits of using synthetic data to train LLMs?",
+  "What are the limitations of retrieval-augmented generation (RAG) for enterprise AI?",
+  "How do autonomous AI agents fail in production, and what safety measures exist?",
+];
+
 interface QueryInputProps {
   onSubmit: (query: string) => void;
   isLoading?: boolean;
@@ -55,9 +61,33 @@ export function QueryInput({ onSubmit, isLoading = false }: QueryInputProps) {
             {isLoading ? "Starting..." : "Research"}
           </Button>
           <p className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">
-            Powered by adversarial fact-checking — claims are verified against
-            source text
+            <kbd className="inline-block px-1 py-0.5 rounded border border-[hsl(var(--border))] font-mono text-[10px] mr-1">Enter</kbd>
+            to submit &middot; <kbd className="inline-block px-1 py-0.5 rounded border border-[hsl(var(--border))] font-mono text-[10px] mr-1">Shift+Enter</kbd>
+            for new line
           </p>
+        </div>
+      </div>
+
+      <div className="mt-8">
+        <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-widest mb-3 select-none">
+          Try an example
+        </p>
+        <div className="flex flex-col gap-2">
+          {EXAMPLE_QUERIES.map((q) => (
+            <button
+              key={q}
+              onClick={() => setQuery(q)}
+              disabled={isLoading}
+              className={cn(
+                "text-left text-sm text-[hsl(var(--muted-foreground))] leading-relaxed",
+                "hover:text-[hsl(var(--foreground))] transition-colors duration-150",
+                "disabled:pointer-events-none",
+                "py-1 border-b border-transparent hover:border-[hsl(var(--border))]"
+              )}
+            >
+              {q}
+            </button>
+          ))}
         </div>
       </div>
     </div>

@@ -26,7 +26,7 @@ export function SourceBar({ sources }: SourceBarProps) {
 
   return (
     <div className="animate-fade-in py-3">
-      <div className="flex h-1 rounded-full overflow-hidden w-full gap-px">
+      <div className="flex h-2 rounded-full overflow-hidden w-full gap-px">
         {types.map(([type, count]) => (
           <div
             key={type}
@@ -38,12 +38,14 @@ export function SourceBar({ sources }: SourceBarProps) {
           />
         ))}
       </div>
-      <div className="flex items-center gap-4 mt-2 flex-wrap">
+      <div className="flex items-center gap-4 mt-2.5 flex-wrap">
+        <span className="text-xs font-medium text-[hsl(var(--foreground))]">
+          {total} sources
+        </span>
+        <span className="text-[hsl(var(--border))] text-xs">·</span>
         {types.map(([type, count]) => (
-          <span
-            key={type}
-            className="text-xs text-[hsl(var(--muted-foreground))]"
-          >
+          <span key={type} className="flex items-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))]">
+            <span className={cn("inline-block h-1.5 w-1.5 rounded-full flex-shrink-0", sourceTypeColors[type] ?? sourceTypeColors.other)} />
             {count} {type}
           </span>
         ))}

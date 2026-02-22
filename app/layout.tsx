@@ -7,8 +7,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Actor-Critic Research",
-  description: "AI research with adversarial fact verification",
+  title: "Argus",
+  description: "Multi-agent research with adversarial fact-checking",
 };
 
 export default function RootLayout({

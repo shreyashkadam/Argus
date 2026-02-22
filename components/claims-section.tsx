@@ -42,6 +42,10 @@ function ClaimItem({ claim, isNew, trackUpdates }: ClaimItemProps) {
 
   const dotStatus = claimStatusToDot(claim.status);
 
+  const confidencePct = claim.confidence !== undefined
+    ? Math.round(claim.confidence * 100)
+    : null;
+
   return (
     <div
       className={cn(
@@ -56,11 +60,27 @@ function ClaimItem({ claim, isNew, trackUpdates }: ClaimItemProps) {
           <p className="text-sm leading-relaxed text-[hsl(var(--foreground))] mb-1">
             {claim.statement}
           </p>
-          <p className="text-xs text-[hsl(var(--muted-foreground))]">
-            {claim.claimType.charAt(0).toUpperCase() + claim.claimType.slice(1)}
-            {" · "}
-            {claim.category}
-          </p>
+          <div className="flex items-center gap-2 flex-wrap mt-1">
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              {claim.claimType.charAt(0).toUpperCase() + claim.claimType.slice(1)}
+              {" · "}
+              {claim.category}
+            </p>
+            {confidencePct !== null && claim.status !== "unverified" && (
+              <span
+                className={cn(
+                  "text-[10px] font-medium px-1.5 py-0.5 rounded tabular-nums",
+                  confidencePct >= 75
+                    ? "bg-emerald-500/10 text-emerald-500"
+                    : confidencePct >= 40
+                    ? "bg-amber-500/10 text-amber-500"
+                    : "bg-red-500/10 text-red-500"
+                )}
+              >
+                {confidencePct}%
+              </span>
+            )}
+          </div>
           <button
             onClick={() => setExpanded(!expanded)}
             className="mt-2 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
@@ -117,9 +137,14 @@ function ClaimItem({ claim, isNew, trackUpdates }: ClaimItemProps) {
               )}
 
               {claim.skepticReasoning && (
-                <p className="text-xs italic text-[hsl(var(--muted-foreground))] leading-relaxed border-l-2 border-[hsl(var(--border))] pl-3">
-                  {claim.skepticReasoning}
-                </p>
+                <div className="border-l-2 border-[hsl(var(--border))] pl-3">
+                  <p className="text-[10px] uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-1 font-medium">
+                    Skeptic verdict
+                  </p>
+                  <p className="text-xs italic text-[hsl(var(--muted-foreground))] leading-relaxed">
+                    {claim.skepticReasoning}
+                  </p>
+                </div>
               )}
             </div>
           )}
@@ -139,6 +164,7 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
   const [existingClaimIds, setExistingClaimIds] = useState<Set<string>>(
     new Set()
   );
+  const [sectionCollapsed, setSectionCollapsed] = useState(false);
 
   useEffect(() => {
     const currentIds = new Set(claims.map((c) => c.id));
@@ -174,7 +200,6 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
           Claims
         </span>
         <div className="flex items-center gap-3 text-xs text-[hsl(var(--muted-foreground))] flex-wrap justify-end">
-          <span>{claims.length} claims</span>
           {verified > 0 && (
             <span className="flex items-center gap-1.5">
               <StatusDot status="verified" />
@@ -199,19 +224,28 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
               {unverified} unverified
             </span>
           )}
+          <span className="text-[hsl(var(--border))]">·</span>
+          <button
+            onClick={() => setSectionCollapsed(!sectionCollapsed)}
+            className="hover:text-[hsl(var(--foreground))] transition-colors"
+          >
+            {sectionCollapsed ? `Show ${claims.length} claims` : "Hide"}
+          </button>
         </div>
       </div>
 
-      <div>
-        {claims.map((claim) => (
-          <ClaimItem
-            key={claim.id}
-            claim={claim}
-            isNew={newClaimIds.has(claim.id)}
-            trackUpdates={existingClaimIds.has(claim.id)}
-          />
-        ))}
-      </div>
+      {!sectionCollapsed && (
+        <div>
+          {claims.map((claim) => (
+            <ClaimItem
+              key={claim.id}
+              claim={claim}
+              isNew={newClaimIds.has(claim.id)}
+              trackUpdates={existingClaimIds.has(claim.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

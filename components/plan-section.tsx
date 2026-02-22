@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { ResearchPlan } from "@/lib/schemas";
 
@@ -19,6 +19,14 @@ interface PlanSectionProps {
 
 export function PlanSection({ plan, isCollapsible = false }: PlanSectionProps) {
   const [collapsed, setCollapsed] = useState(false);
+
+  // Auto-collapse when the phase moves past planning
+  useEffect(() => {
+    if (isCollapsible) {
+      const timer = setTimeout(() => setCollapsed(true), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsible]);
 
   return (
     <div className="animate-fade-in py-8 border-b border-[hsl(var(--border))]">

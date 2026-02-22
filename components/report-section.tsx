@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { StatusDot } from "@/components/ui/status-dot";
 import { cn } from "@/lib/utils";
 import type { FinalReport } from "@/lib/schemas";
+
+const INITIAL_SOURCE_COUNT = 10;
 
 const sourceTypeStyles: Record<string, string> = {
   academic: "bg-violet-500/10 text-violet-500",
@@ -19,6 +22,11 @@ interface ReportSectionProps {
 }
 
 export function ReportSection({ report }: ReportSectionProps) {
+  const [showAllSources, setShowAllSources] = useState(false);
+  const displayedSources = showAllSources
+    ? report.sources
+    : report.sources.slice(0, INITIAL_SOURCE_COUNT);
+  const hiddenSourceCount = report.sources.length - INITIAL_SOURCE_COUNT;
   const markdownContent = [
     `# ${report.title}`,
     "",
@@ -33,7 +41,29 @@ export function ReportSection({ report }: ReportSectionProps) {
         Report
       </span>
 
-      <div className="mt-6">
+      {/* Evidence Scorecard — shown above prose so readers know quality upfront */}
+      <div className="mt-4 mb-2 flex items-center gap-6 flex-wrap">
+        <div className="flex items-center gap-2 text-sm">
+          <StatusDot status="verified" />
+          <span className="text-[hsl(var(--foreground))]">
+            {report.verifiedClaimCount} Verified
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <StatusDot status="refuted" />
+          <span className="text-[hsl(var(--foreground))]">
+            {report.refutedClaimCount} Refuted
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <StatusDot status="insufficient" />
+          <span className="text-[hsl(var(--foreground))]">
+            {report.insufficientEvidenceCount} Insufficient
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-4">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -62,7 +92,7 @@ export function ReportSection({ report }: ReportSectionProps) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline underline-offset-2 text-[hsl(var(--foreground))] hover:opacity-60 transition-opacity"
+                className="underline underline-offset-2 text-[hsl(var(--foreground))] hover:text-blue-400 transition-colors"
               >
                 {children}
               </a>
@@ -129,46 +159,30 @@ export function ReportSection({ report }: ReportSectionProps) {
         </ReactMarkdown>
       </div>
 
-      {/* Evidence Scorecard */}
-      <div className="mt-6 pt-6 border-t border-[hsl(var(--border))] flex items-center gap-8 flex-wrap">
-        <div className="flex items-center gap-2 text-sm">
-          <StatusDot status="verified" />
-          <span className="text-[hsl(var(--foreground))]">
-            {report.verifiedClaimCount} Verified
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <StatusDot status="refuted" />
-          <span className="text-[hsl(var(--foreground))]">
-            {report.refutedClaimCount} Refuted
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <StatusDot status="insufficient" />
-          <span className="text-[hsl(var(--foreground))]">
-            {report.insufficientEvidenceCount} Insufficient
-          </span>
-        </div>
-      </div>
-
       {/* Sources */}
       {report.sources.length > 0 && (
         <div className="mt-8">
-          <span className="text-xs uppercase tracking-widest text-[hsl(var(--muted-foreground))] font-medium">
-            Sources
-          </span>
-          <ol className="mt-4 space-y-3">
-            {report.sources.map((source, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm">
-                <span className="text-xs text-[hsl(var(--muted-foreground))] flex-shrink-0 w-5 pt-0.5 tabular-nums">
+          <div className="flex items-center justify-between">
+            <span className="text-xs uppercase tracking-widest text-[hsl(var(--muted-foreground))] font-medium">
+              Sources
+            </span>
+            <span className="text-xs text-[hsl(var(--muted-foreground))]">
+              {report.sources.length} total
+            </span>
+          </div>
+          <ol className="mt-4 space-y-2.5">
+            {displayedSources.map((source, i) => (
+              <li key={i} className="flex items-center gap-3 text-sm min-w-0">
+                <span className="text-xs text-[hsl(var(--muted-foreground))] flex-shrink-0 w-5 tabular-nums">
                   {i + 1}.
                 </span>
-                <div className="flex-1 min-w-0 flex items-start gap-2 flex-wrap">
+                <div className="flex-1 min-w-0 flex items-center gap-2">
                   <a
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm underline underline-offset-2 text-[hsl(var(--foreground))] hover:opacity-60 transition-opacity break-all"
+                    title={source.title || source.domain}
+                    className="text-sm underline underline-offset-2 text-[hsl(var(--foreground))] hover:text-blue-400 transition-colors truncate"
                   >
                     {source.title || source.domain}
                   </a>
@@ -185,6 +199,16 @@ export function ReportSection({ report }: ReportSectionProps) {
               </li>
             ))}
           </ol>
+          {report.sources.length > INITIAL_SOURCE_COUNT && (
+            <button
+              onClick={() => setShowAllSources(!showAllSources)}
+              className="mt-4 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
+            >
+              {showAllSources
+                ? "Show fewer sources"
+                : `Show ${hiddenSourceCount} more source${hiddenSourceCount !== 1 ? "s" : ""}`}
+            </button>
+          )}
         </div>
       )}
     </div>
