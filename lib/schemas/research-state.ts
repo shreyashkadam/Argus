@@ -14,6 +14,8 @@ export const ResearchPhaseEnum = z.enum([
   "error",
 ]);
 
+export type ResearchPhase = z.infer<typeof ResearchPhaseEnum>;
+
 export const ResearchStateSchema = z.object({
   id: z.string().uuid(),
   query: z.string(),

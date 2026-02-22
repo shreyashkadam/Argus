@@ -32,6 +32,7 @@ export {
 export {
   ResearchPhaseEnum,
   ResearchStateSchema,
+  type ResearchPhase,
   type ResearchState,
 } from "./research-state";
 
