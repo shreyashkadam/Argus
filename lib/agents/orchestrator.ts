@@ -8,6 +8,7 @@ import {
   FinalReport,
 } from "@/lib/schemas";
 import { runPlanner } from "@/lib/agents/planner";
+import { runResearcher } from "@/lib/agents/researcher";
 import { ResearcherResult, SkepticResult } from "@/lib/agents/types";
 import { metrics } from "@/lib/telemetry";
 
@@ -180,15 +181,6 @@ export async function* runResearchLoop(
 }
 
 // STUBS
-async function runResearcher(state: ResearchState): Promise<ResearcherResult> {
-  return {
-    claims: [],
-    sources: [],
-    rawScrapedContent: {},
-    notes: "Stub researcher",
-  };
-}
-
 async function runSkeptic(state: ResearchState): Promise<SkepticResult> {
   return {
     claims: state.claims,
