@@ -13,6 +13,10 @@ Argus tackles this with an Actor-Critic loop. The Researcher (Actor) searches th
 - **Scope:** Single-session, no persistence. Each query is a fresh investigation, completing in 1–5 minutes.
 - **Philosophy:** Correctness over breadth. Fewer verified claims beat many unverified ones.
 
+## Demo
+
+[Argus Walkthrough.mp4](Argus%20Walkthrough.mp4)
+
 ## 2. Architecture
 
 Four agents — Planner, Researcher, Skeptic, Report Generator — coordinated by an orchestrator (`lib/agents/orchestrator.ts`) that runs the Actor-Critic loop. A fifth component, the Report Formatter, is a pure function (no LLM) that converts the report to Markdown.
