@@ -11,10 +11,10 @@ import { SourceBar } from "@/components/source-bar";
 import { ReportSection } from "@/components/report-section";
 import type { StreamEvent, SourceURL } from "@/lib/schemas";
 
-function ResearchingSkeleton() {
+function PhaseSkeleton({ message, lines = 3 }: { message: string; lines?: number }) {
   return (
     <div className="animate-fade-in space-y-4 py-6">
-      {[1, 2, 3].map((i) => (
+      {Array.from({ length: lines }, (_, i) => (
         <div key={i} className="flex items-start gap-3">
           <span className="mt-1.5 h-2 w-2 rounded-full bg-[hsl(var(--border))] flex-shrink-0 animate-skeleton" />
           <div className="flex-1 space-y-2">
@@ -30,7 +30,7 @@ function ResearchingSkeleton() {
         </div>
       ))}
       <p className="text-xs text-[hsl(var(--muted-foreground))] pt-2 animate-skeleton">
-        Searching the web and extracting evidence…
+        {message}
       </p>
     </div>
   );
@@ -97,9 +97,12 @@ export default function Home() {
       .map((e) => e.source);
   }, [events, report]);
 
-  const showSkeleton =
-    (phase === "researching" || phase === "critiquing" || phase === "synthesizing") &&
-    claims.length === 0;
+  const showPlanningSkeleton = phase === "planning" && !plan;
+
+  const showResearchingSkeleton =
+    (phase === "researching" || phase === "critiquing") && claims.length === 0;
+
+  const showSynthesizingSkeleton = phase === "synthesizing" && !report;
 
   const handleSubmit = (q: string) => {
     setQuery(q);
@@ -163,15 +166,25 @@ export default function Home() {
 
         {error && <ErrorState message={error} onRetry={handleRetry} />}
 
+        {showPlanningSkeleton && (
+          <PhaseSkeleton message="Analyzing your query and building a research plan…" lines={4} />
+        )}
+
         {plan && (
           <PlanSection plan={plan} isCollapsible={phase !== "planning"} />
         )}
 
         {sources.length > 0 && <SourceBar sources={sources} />}
 
-        {showSkeleton && <ResearchingSkeleton />}
+        {showResearchingSkeleton && (
+          <PhaseSkeleton message="Searching the web and extracting evidence…" />
+        )}
 
         {claims.length > 0 && <ClaimsSection claims={claims} />}
+
+        {showSynthesizingSkeleton && (
+          <PhaseSkeleton message="Compiling findings into a comprehensive report…" lines={5} />
+        )}
 
         {report && (
           <div className="border-t border-[hsl(var(--border))]">
