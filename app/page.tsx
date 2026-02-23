@@ -16,7 +16,7 @@ function PhaseSkeleton({ message, lines = 3 }: { message: string; lines?: number
     <div className="animate-fade-in space-y-4 py-6">
       {Array.from({ length: lines }, (_, i) => (
         <div key={i} className="flex items-start gap-3">
-          <span className="mt-1.5 h-2 w-2 rounded-full bg-[hsl(var(--border))] flex-shrink-0 animate-skeleton" />
+          <span className="mt-1.5 h-2 w-2 rounded-full bg-[hsl(var(--border))] shrink-0 animate-skeleton" />
           <div className="flex-1 space-y-2">
             <div
               className="h-3 rounded bg-[hsl(var(--muted))] animate-skeleton"
@@ -45,7 +45,7 @@ function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
     <div className="animate-fade-in mt-6 rounded-md border border-red-500/20 bg-red-500/5 px-4 py-4">
       <div className="flex items-start gap-3">
-        <span className="text-red-400 text-base leading-none mt-0.5 flex-shrink-0">✕</span>
+        <span className="text-red-400 text-base leading-none mt-0.5 shrink-0">✕</span>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-red-400 mb-1">Research failed</p>
           <p className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed wrap-break-word">
@@ -122,14 +122,21 @@ export default function Home() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-2xl">
-          <div className="text-center mb-14 select-none">
-            <h1 className="text-5xl font-semibold tracking-tight text-[hsl(var(--foreground))] mb-3">
+          <div className="relative text-center mb-14 select-none">
+            <div
+              className="absolute inset-0 -top-24 -bottom-24 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 60% 50% at 50% 40%, hsl(217 91% 60% / 0.06), transparent)",
+              }}
+            />
+            <h1 className="relative text-5xl font-semibold tracking-tight text-[hsl(var(--foreground))] mb-3">
               Argus
             </h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] leading-relaxed">
+            <p className="relative text-sm text-[hsl(var(--muted-foreground))] leading-relaxed">
               Multi-agent research with adversarial fact-checking
             </p>
-            <p className="text-xs text-[hsl(var(--muted-foreground))] mt-2 opacity-60">
+            <p className="relative text-xs text-[hsl(var(--muted-foreground))] mt-2 opacity-60">
               by{" "}
               <a
                 href="https://shreyashkadam.me/"
@@ -165,6 +172,20 @@ export default function Home() {
         <PhaseTimeline phase={phase} events={events} />
 
         {error && <ErrorState message={error} onRetry={handleRetry} />}
+
+        {phase === "complete" && (
+          <div className="animate-fade-in-scale flex items-center gap-3 py-3.5 px-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 mb-6">
+            <span className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+              <span className="text-[hsl(var(--background))] text-[10px] font-bold leading-none">✓</span>
+            </span>
+            <p className="text-sm text-[hsl(var(--foreground))]">
+              Research complete
+              <span className="text-[hsl(var(--muted-foreground))] ml-1">
+                — {claims.length} claim{claims.length !== 1 ? "s" : ""} analyzed across {sources.length} source{sources.length !== 1 ? "s" : ""}
+              </span>
+            </p>
+          </div>
+        )}
 
         {showPlanningSkeleton && (
           <PhaseSkeleton message="Analyzing your query and building a research plan…" lines={4} />

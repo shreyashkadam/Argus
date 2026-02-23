@@ -17,6 +17,15 @@ const statusColors: Record<StatusDotStatus, string> = {
   idle: "bg-zinc-600",
 };
 
+const statusLabels: Record<StatusDotStatus, string> = {
+  verified: "Verified",
+  refuted: "Refuted",
+  insufficient: "Insufficient evidence",
+  unverified: "Unverified",
+  active: "In progress",
+  idle: "Idle",
+};
+
 interface StatusDotProps {
   status: StatusDotStatus;
   className?: string;
@@ -26,10 +35,13 @@ export function StatusDot({ status, className }: StatusDotProps) {
   return (
     <span
       className={cn(
-        "inline-block rounded-full h-2 w-2 flex-shrink-0",
+        "inline-block rounded-full h-2 w-2 shrink-0",
         statusColors[status],
         className
       )}
+      role="status"
+      aria-label={statusLabels[status]}
+      title={statusLabels[status]}
     />
   );
 }

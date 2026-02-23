@@ -23,6 +23,7 @@ interface ReportSectionProps {
 
 export function ReportSection({ report }: ReportSectionProps) {
   const [showAllSources, setShowAllSources] = useState(false);
+  const [copied, setCopied] = useState(false);
   const displayedSources = showAllSources
     ? report.sources
     : report.sources.slice(0, INITIAL_SOURCE_COUNT);
@@ -35,11 +36,27 @@ export function ReportSection({ report }: ReportSectionProps) {
     ...report.sections.flatMap((s) => [`## ${s.heading}`, "", s.content, ""]),
   ].join("\n");
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(markdownContent);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* clipboard API may be unavailable */ }
+  };
+
   return (
     <div className="animate-fade-in py-8">
-      <span className="text-xs uppercase tracking-widest text-[hsl(var(--muted-foreground))] font-medium">
-        Report
-      </span>
+      <div className="flex items-center justify-between">
+        <span className="text-xs uppercase tracking-widest text-[hsl(var(--muted-foreground))] font-medium">
+          Report
+        </span>
+        <button
+          onClick={handleCopy}
+          className="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
+        >
+          {copied ? "Copied!" : "Copy report"}
+        </button>
+      </div>
 
       {/* Evidence Scorecard — shown above prose so readers know quality upfront */}
       <div className="mt-4 mb-2 flex items-center gap-6 flex-wrap">
@@ -173,7 +190,7 @@ export function ReportSection({ report }: ReportSectionProps) {
           <ol className="mt-4 space-y-2.5">
             {displayedSources.map((source, i) => (
               <li key={i} className="flex items-center gap-3 text-sm min-w-0">
-                <span className="text-xs text-[hsl(var(--muted-foreground))] flex-shrink-0 w-5 tabular-nums">
+                <span className="text-xs text-[hsl(var(--muted-foreground))] shrink-0 w-5 tabular-nums">
                   {i + 1}.
                 </span>
                 <div className="flex-1 min-w-0 flex items-center gap-2">
@@ -188,7 +205,7 @@ export function ReportSection({ report }: ReportSectionProps) {
                   </a>
                   <span
                     className={cn(
-                      "text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0",
+                      "text-xs px-2 py-0.5 rounded-full font-medium shrink-0",
                       sourceTypeStyles[source.sourceType] ??
                         sourceTypeStyles.other
                     )}

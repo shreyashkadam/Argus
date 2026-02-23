@@ -44,10 +44,10 @@ export function QueryInput({ onSubmit, isLoading = false }: QueryInputProps) {
           autoFocus
           className={cn(
             "w-full resize-none bg-transparent",
-            "border-0 border-b border-[hsl(var(--border))] pb-3",
+            "border-0 border-b-2 border-[hsl(var(--border))] pb-3",
             "text-lg md:text-xl font-light leading-relaxed",
             "text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))]",
-            "focus:outline-none focus:border-[hsl(var(--foreground))] transition-colors duration-200",
+            "focus:outline-none focus:border-[hsl(var(--foreground))/0.6] transition-colors duration-300",
             "disabled:opacity-50"
           )}
         />
@@ -68,8 +68,8 @@ export function QueryInput({ onSubmit, isLoading = false }: QueryInputProps) {
         </div>
       </div>
 
-      <div className="mt-8">
-        <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-widest mb-3 select-none">
+      <div className="mt-10">
+        <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-widest mb-4 select-none">
           Try an example
         </p>
         <div className="flex flex-col gap-2">
@@ -79,12 +79,14 @@ export function QueryInput({ onSubmit, isLoading = false }: QueryInputProps) {
               onClick={() => setQuery(q)}
               disabled={isLoading}
               className={cn(
-                "text-left text-sm text-[hsl(var(--muted-foreground))] leading-relaxed",
-                "hover:text-[hsl(var(--foreground))] transition-colors duration-150",
-                "disabled:pointer-events-none",
-                "py-1 border-b border-transparent hover:border-[hsl(var(--border))]"
+                "group text-left text-sm text-[hsl(var(--muted-foreground))] leading-relaxed",
+                "rounded-lg px-4 py-3 border border-transparent",
+                "hover:border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]",
+                "transition-all duration-200",
+                "disabled:pointer-events-none"
               )}
             >
+              <span className="inline-block text-[hsl(var(--border))] group-hover:text-[hsl(var(--muted-foreground))] mr-2 transition-colors duration-200">→</span>
               {q}
             </button>
           ))}

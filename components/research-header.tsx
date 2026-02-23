@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { StatusDot, type StatusDotStatus } from "@/components/ui/status-dot";
 import type { ResearchPhase } from "@/lib/schemas";
@@ -19,6 +22,12 @@ function phaseToStatus(phase: ResearchPhase): StatusDotStatus {
   return "active";
 }
 
+function formatElapsed(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 interface ResearchHeaderProps {
   query: string;
   phase: ResearchPhase;
@@ -34,6 +43,17 @@ export function ResearchHeader({
   maxIterations = 3,
   onReset,
 }: ResearchHeaderProps) {
+  const mountTime = useRef(Date.now());
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (phase === "complete" || phase === "error") return;
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - mountTime.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [phase]);
+
   const showIteration =
     (phase === "researching" || phase === "critiquing") &&
     iteration !== undefined &&
@@ -41,27 +61,30 @@ export function ResearchHeader({
 
   return (
     <div className="flex items-center gap-3 py-4 border-b border-[hsl(var(--border))]">
-      <span className="text-xs font-bold tracking-[0.18em] uppercase text-[hsl(var(--muted-foreground))] select-none flex-shrink-0">
+      <span className="text-xs font-bold tracking-[0.18em] uppercase text-[hsl(var(--muted-foreground))] select-none shrink-0">
         Argus
       </span>
-      <span className="text-[hsl(var(--border))] flex-shrink-0 text-base leading-none">·</span>
+      <span className="text-[hsl(var(--border))] shrink-0 text-base leading-none">·</span>
       <div className="flex-1 min-w-0 flex items-center gap-2.5">
-        <StatusDot status={phaseToStatus(phase)} className="flex-shrink-0" />
+        <StatusDot status={phaseToStatus(phase)} className="shrink-0" />
         <span className="text-sm font-medium truncate text-[hsl(var(--foreground))]">
           {query}
         </span>
       </div>
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 shrink-0">
+        <span className="text-xs text-[hsl(var(--muted-foreground))] tabular-nums font-mono hidden sm:inline">
+          {formatElapsed(elapsed)}
+        </span>
         {showIteration && (
-          <span className="text-xs text-[hsl(var(--muted-foreground))] tabular-nums">
-            Iteration {iteration}/{maxIterations}
+          <span className="text-xs text-[hsl(var(--muted-foreground))] tabular-nums hidden sm:inline">
+            Iter {iteration}/{maxIterations}
           </span>
         )}
         <span className="text-xs text-[hsl(var(--muted-foreground))]">
           {phaseLabels[phase]}
         </span>
         <Button variant="ghost" size="sm" onClick={onReset}>
-          New Research
+          New
         </Button>
       </div>
     </div>

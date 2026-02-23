@@ -55,7 +55,7 @@ export function PlanSection({ plan, isCollapsible = false }: PlanSectionProps) {
           <ol className="space-y-6">
             {plan.angles.map((angle, i) => (
               <li key={i} className="flex gap-3">
-                <span className="text-xs text-[hsl(var(--muted-foreground))] flex-shrink-0 w-4 pt-0.5 tabular-nums">
+                <span className="text-xs text-[hsl(var(--muted-foreground))] shrink-0 w-4 pt-0.5 tabular-nums">
                   {i + 1}.
                 </span>
                 <div className="flex-1 min-w-0">

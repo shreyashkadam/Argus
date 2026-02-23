@@ -55,7 +55,7 @@ function ClaimItem({ claim, isNew, trackUpdates }: ClaimItemProps) {
       )}
     >
       <div className="flex items-start gap-3">
-        <StatusDot status={dotStatus} className="mt-1.5 flex-shrink-0" />
+        <StatusDot status={dotStatus} className="mt-1.5 shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-sm leading-relaxed text-[hsl(var(--foreground))] mb-1">
             {claim.statement}
