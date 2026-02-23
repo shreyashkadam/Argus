@@ -187,7 +187,7 @@ Two real tools: **web search** (Tavily) and **web scraper** (Jina Reader). Four 
 ### How to Run
 
 ```bash
-git clone <repo-url> && cd argus
+git clone https://github.com/shreyashkadam/Argus.git && cd Argus
 fnm use             # Node 24+ (project includes .node-version)
 pnpm install
 cp .env.example .env.local   # Fill in API keys
