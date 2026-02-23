@@ -15,7 +15,7 @@ Argus tackles this with an Actor-Critic loop. The Researcher (Actor) searches th
 
 ## Demo
 
-[Argus Walkthrough.mp4](Argus%20Walkthrough.mp4)
+https://github.com/user-attachments/assets/1ac0aa69-45c2-4488-86ed-96d8bc0648ca
 
 ## 2. Architecture
 
