@@ -9,6 +9,6 @@ export type SkepticModelEntry = { id: string; model: LanguageModel };
 
 export const skepticModels: SkepticModelEntry[] = [
   { id: "grok", model: openrouter("x-ai/grok-4.1-fast") },
-  { id: "claude", model: openrouter("minimax/minimax-m2.5") },
+  { id: "gemini3flash", model: openrouter("google/gemini-3-flash-preview") },
   { id: "gemini", model: openrouter("google/gemini-2.5-flash") },
 ];
