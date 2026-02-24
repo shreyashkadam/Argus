@@ -5,6 +5,9 @@ const envSchema = z.object({
   OPENROUTER_API_KEY: z.string().min(1, "OPENROUTER_API_KEY is required"),
   TAVILY_API_KEY: z.string().min(1, "TAVILY_API_KEY is required"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  REDIS_URL: z.string().url().optional(),
+  TAVILY_RATE_LIMIT: z.coerce.number().int().positive().optional(),
+  JINA_RATE_LIMIT: z.coerce.number().int().positive().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

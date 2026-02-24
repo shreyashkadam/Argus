@@ -2,6 +2,8 @@ import { tool } from "ai";
 import { z } from "zod";
 import { withTelemetry, logEvent, metrics } from "@/lib/telemetry";
 import { scrapeError } from "@/lib/errors";
+import { getCachedScrape, setCachedScrape } from "@/lib/cache/scrape-cache";
+import { checkRateLimitWithWait, JINA_RATE_LIMIT } from "@/lib/cache/rate-limiter";
 
 const MAX_CONTENT_LENGTH = 50_000;
 const MIN_CONTENT_LENGTH = 100;
@@ -12,6 +14,20 @@ type ScrapeResult =
   | { success: false; url: string; error: string; content: "" };
 
 async function scrapeUrlInternal(url: string): Promise<ScrapeResult> {
+  // Check cache first
+  const cached = await getCachedScrape(url);
+  if (cached !== null) {
+    return {
+      success: true,
+      url,
+      content: cached,
+      contentLength: cached.length,
+    };
+  }
+
+  // Cache miss — rate-limit the Jina call
+  await checkRateLimitWithWait("jina", JINA_RATE_LIMIT);
+
   const jinaUrl = `https://r.jina.ai/${url}`;
   const response = await fetch(jinaUrl, {
     headers: { Accept: "text/markdown", "X-No-Cache": "true" },
@@ -35,6 +51,9 @@ async function scrapeUrlInternal(url: string): Promise<ScrapeResult> {
   if (text.length > MAX_CONTENT_LENGTH) {
     text = text.slice(0, MAX_CONTENT_LENGTH) + "\n\n[Content truncated at 50,000 characters]";
   }
+
+  // Populate cache after successful scrape
+  await setCachedScrape(url, text);
 
   return {
     success: true,

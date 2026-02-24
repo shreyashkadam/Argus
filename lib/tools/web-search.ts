@@ -6,6 +6,7 @@ import { withTelemetry, logEvent, metrics } from "@/lib/telemetry";
 import { withRetry } from "@/lib/retry";
 import { searchError } from "@/lib/errors";
 import { type SourceURL } from "@/lib/schemas";
+import { checkRateLimitWithWait, TAVILY_RATE_LIMIT } from "@/lib/cache/rate-limiter";
 
 const SearchResultSchema = z.object({
   title: z.string(),
@@ -136,12 +137,13 @@ export const webSearchTool = tool({
       { queryCount: String(queries.length) },
       async () => {
         const settled = await Promise.allSettled(
-          queries.map((query) =>
-            withRetry(
+          queries.map(async (query) => {
+            await checkRateLimitWithWait("tavily", TAVILY_RATE_LIMIT);
+            return withRetry(
               () => client.search(query, { maxResults: 10 }),
               { retryIf: () => true }
-            )
-          )
+            );
+          })
         );
 
         const allFailed = settled.every((s) => s.status === "rejected");
