@@ -206,10 +206,46 @@ Two real tools: **web search** (Tavily) and **web scraper** (Jina Reader, with R
 git clone https://github.com/shreyashkadam/Argus.git && cd Argus
 fnm use             # Node 24+ (project includes .node-version)
 pnpm install
-cp .env.example .env.local   # Fill in API keys
+cp .env.example .env.local   # Fill in API keys (and Redis if using cache)
 pnpm dev
 # Open http://localhost:3000 and enter the test prompt
 ```
+
+### Redis Setup (optional but recommended)
+
+Redis is **optional** — Argus runs fine without it — but enabling it unlocks caching and rate limiting (lower latency, fewer Jina calls) and populates cache metrics in benchmarks.
+
+1. **Install Redis locally** (macOS with Homebrew):
+
+   ```bash
+   brew install redis
+   brew services start redis
+   ```
+
+   This typically starts Redis on `redis://localhost:6379`.
+
+2. **Configure your `.env.local`:**
+
+   ```bash
+   # Required
+   OPENROUTER_API_KEY=sk-...
+   TAVILY_API_KEY=tvly-...
+
+   # Optional — enable caching + rate limiting
+   REDIS_URL=redis://localhost:6379
+
+   # Optional — override default rate limits (per 60s window)
+   # TAVILY_RATE_LIMIT=20
+   # JINA_RATE_LIMIT=15
+   ```
+
+3. **Verify Redis connectivity:**
+
+   With the dev server running, open:
+
+   - `http://localhost:3000/api/health` → check `redis.connected: true`
+
+If `REDIS_URL` is unset or Redis is down, Argus falls back to no cache and fail-open rate limiting — no extra setup required to get started.
 
 ### Environment Variables
 
