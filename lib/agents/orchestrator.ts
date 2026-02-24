@@ -9,9 +9,9 @@ import {
 } from "@/lib/schemas";
 import { runPlanner } from "@/lib/agents/planner";
 import { runResearcher } from "@/lib/agents/researcher";
-import { runSkeptic } from "@/lib/agents/skeptic";
+import { runSkepticQuorum } from "@/lib/agents/skeptic";
 import { generateReport } from "@/lib/agents/report-generator";
-import { ResearcherResult, SkepticResult } from "@/lib/agents/types";
+import { ResearcherResult, SkepticResult, QuorumDetails } from "@/lib/agents/types";
 import { metrics } from "@/lib/telemetry";
 
 export async function* runResearchLoop(
@@ -42,6 +42,8 @@ export async function* runResearchLoop(
       totalDurationMs: 0,
     },
   };
+
+  let latestQuorumDetails: QuorumDetails | undefined;
 
   try {
     // PLANNING PHASE
@@ -128,11 +130,14 @@ export async function* runResearchLoop(
       yield { type: "phase-change", phase: "critiquing", previousPhase: prevPhaseCritique };
 
       const skepticStartTime = Date.now();
-      const skepticResult = await runSkeptic(state);
+      const skepticResult = await runSkepticQuorum(state);
       const skepticDuration = Date.now() - skepticStartTime;
 
       state.claims = skepticResult.claims;
       state.skepticFeedback = skepticResult.feedback;
+      if (skepticResult.quorumDetails) {
+        latestQuorumDetails = skepticResult.quorumDetails;
+      }
 
       for (const claim of skepticResult.claims) {
         yield { type: "claim-updated", claim };
@@ -141,7 +146,7 @@ export async function* runResearchLoop(
       state.trace!.steps.push({
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
-        agent: "skeptic",
+        agent: "skeptic-quorum",
         action: "critique",
         input: "Claims and raw content",
         output: "Critique completed",

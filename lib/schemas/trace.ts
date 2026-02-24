@@ -3,7 +3,7 @@ import { z } from "zod";
 export const TraceStepSchema = z.object({
   id: z.string().uuid(),
   timestamp: z.string().datetime(),
-  agent: z.enum(["planner", "researcher", "skeptic", "report-generator"]),
+  agent: z.enum(["planner", "researcher", "skeptic", "skeptic-quorum", "report-generator"]),
   action: z
     .string()
     .describe(
