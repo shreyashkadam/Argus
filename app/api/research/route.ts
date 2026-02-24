@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const result = RequestBodySchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
-      { error: "Invalid request body", details: result.error.errors },
+      { error: "Invalid request body", details: result.error.issues },
       { status: 400 }
     );
   }
