@@ -7,6 +7,7 @@ import {
   Claim,
   FinalReport,
   ResearchPlan,
+  SessionBenchmark,
 } from "@/lib/schemas";
 
 export function useResearch() {
@@ -16,6 +17,7 @@ export function useResearch() {
   const [events, setEvents] = useState<StreamEvent[]>([]);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [report, setReport] = useState<FinalReport | null>(null);
+  const [benchmark, setBenchmark] = useState<SessionBenchmark | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -31,6 +33,7 @@ export function useResearch() {
     setEvents([]);
     setClaims([]);
     setReport(null);
+    setBenchmark(null);
     setError(null);
   }, []);
 
@@ -105,6 +108,9 @@ export function useResearch() {
                   case "report-complete":
                     setReport(event.report);
                     break;
+                  case "benchmark-complete":
+                    setBenchmark(event.benchmark);
+                    break;
                   case "error":
                     setError(event.message);
                     setPhase("error");
@@ -138,6 +144,7 @@ export function useResearch() {
     events,
     claims,
     report,
+    benchmark,
     error,
     reset,
   };

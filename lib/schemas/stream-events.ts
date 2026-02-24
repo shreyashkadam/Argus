@@ -4,6 +4,7 @@ import { ClaimSchema } from "./claim";
 import { SourceURLSchema } from "./source";
 import { FinalReportSchema } from "./report";
 import { ResearchPhaseEnum } from "./research-state";
+import { SessionBenchmarkSchema } from "./benchmark";
 
 export const StreamEventSchema = z.discriminatedUnion("type", [
   z.object({
@@ -38,6 +39,10 @@ export const StreamEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("report-complete"),
     report: FinalReportSchema,
+  }),
+  z.object({
+    type: z.literal("benchmark-complete"),
+    benchmark: SessionBenchmarkSchema,
   }),
   z.object({
     type: z.literal("error"),

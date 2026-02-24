@@ -47,3 +47,8 @@ export {
   StreamEventSchema,
   type StreamEvent,
 } from "./stream-events";
+
+export {
+  SessionBenchmarkSchema,
+  type SessionBenchmark,
+} from "./benchmark";

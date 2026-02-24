@@ -9,6 +9,7 @@ import { PlanSection } from "@/components/plan-section";
 import { ClaimsSection } from "@/components/claims-section";
 import { SourceBar } from "@/components/source-bar";
 import { ReportSection } from "@/components/report-section";
+import { BenchmarkCard } from "@/components/benchmark-card";
 import type { StreamEvent, SourceURL } from "@/lib/schemas";
 
 function PhaseSkeleton({ message, lines = 3 }: { message: string; lines?: number }) {
@@ -72,6 +73,7 @@ export default function Home() {
     events,
     claims,
     report,
+    benchmark,
     error,
     reset,
   } = useResearch();
@@ -210,6 +212,19 @@ export default function Home() {
         {report && (
           <div className="border-t border-[hsl(var(--border))]">
             <ReportSection report={report} />
+          </div>
+        )}
+
+        {benchmark && <BenchmarkCard benchmark={benchmark} />}
+
+        {phase === "complete" && (
+          <div className="mt-8 text-center">
+            <a
+              href="/benchmarks"
+              className="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors underline underline-offset-2"
+            >
+              View benchmark history
+            </a>
           </div>
         )}
       </div>

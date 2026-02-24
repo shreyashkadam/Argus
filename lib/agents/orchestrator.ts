@@ -12,7 +12,8 @@ import { runResearcher } from "@/lib/agents/researcher";
 import { runSkepticQuorum } from "@/lib/agents/skeptic";
 import { generateReport } from "@/lib/agents/report-generator";
 import { ResearcherResult, SkepticResult, QuorumDetails } from "@/lib/agents/types";
-import { metrics } from "@/lib/telemetry";
+import { metrics, logEvent } from "@/lib/telemetry";
+import { captureBenchmark, saveBenchmark } from "@/lib/benchmark";
 
 export async function* runResearchLoop(
   query: string,
@@ -196,6 +197,16 @@ export async function* runResearchLoop(
     state.trace!.metricsSnapshot = metrics.getCounters();
 
     yield { type: "report-complete", report };
+
+    try {
+      const benchmark = captureBenchmark(state, latestQuorumDetails);
+      await saveBenchmark(benchmark);
+      yield { type: "benchmark-complete", benchmark };
+    } catch (benchErr) {
+      logEvent("benchmark_save_error", {
+        error: benchErr instanceof Error ? benchErr.message : String(benchErr),
+      });
+    }
 
     const prevPhaseComplete = state.phase;
     state.phase = "complete";
