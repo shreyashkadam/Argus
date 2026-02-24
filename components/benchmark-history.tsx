@@ -24,7 +24,8 @@ type SortKey =
   | "quoteMatchRate"
   | "totalDuration"
   | "iterations"
-  | "skepticMode";
+  | "skepticMode"
+  | "cacheHitRate";
 
 function getSortValue(b: SessionBenchmark, key: SortKey): string | number {
   switch (key) {
@@ -36,6 +37,7 @@ function getSortValue(b: SessionBenchmark, key: SortKey): string | number {
     case "totalDuration": return b.timing.totalDurationMs;
     case "iterations": return b.iterations;
     case "skepticMode": return b.config.skepticMode;
+    case "cacheHitRate": return b.cache?.hitRate ?? -1;
   }
 }
 
@@ -114,6 +116,7 @@ export function BenchmarkHistory() {
     { key: "quoteMatchRate", label: "Quotes", align: "right" },
     { key: "totalDuration", label: "Duration", align: "right" },
     { key: "iterations", label: "Iters", align: "right" },
+    { key: "cacheHitRate", label: "Cache", align: "right" },
     { key: "skepticMode", label: "Mode" },
   ];
 
@@ -158,6 +161,9 @@ export function BenchmarkHistory() {
               </td>
               <td className="py-2 px-3 border-b border-[hsl(var(--border))] text-right tabular-nums text-[hsl(var(--foreground))]">
                 {b.iterations}
+              </td>
+              <td className="py-2 px-3 border-b border-[hsl(var(--border))] text-right tabular-nums text-[hsl(var(--muted-foreground))]">
+                {b.cache ? pct(b.cache.hitRate) : "—"}
               </td>
               <td className="py-2 px-3 border-b border-[hsl(var(--border))] text-[hsl(var(--muted-foreground))]">
                 {b.config.skepticMode}

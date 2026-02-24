@@ -154,6 +154,38 @@ export function BenchmarkCard({ benchmark }: BenchmarkCardProps) {
             </div>
           </div>
 
+          {/* Cache */}
+          {benchmark.cache && (
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-[hsl(var(--muted-foreground))] font-medium mb-2">
+                Cache
+              </p>
+              <div className="flex items-center gap-3 flex-wrap text-xs">
+                <span
+                  className={cn(
+                    "px-1.5 py-0.5 rounded text-[10px] font-medium",
+                    benchmark.cache.enabled
+                      ? "bg-emerald-500/10 text-emerald-500"
+                      : "bg-zinc-500/10 text-zinc-400"
+                  )}
+                >
+                  {benchmark.cache.enabled ? "enabled" : "disabled"}
+                </span>
+                <span className="text-[hsl(var(--foreground))]">
+                  {benchmark.cache.hits} hit{benchmark.cache.hits !== 1 ? "s" : ""}
+                </span>
+                <span className="text-[hsl(var(--muted-foreground))]">·</span>
+                <span className="text-[hsl(var(--foreground))]">
+                  {benchmark.cache.misses} miss{benchmark.cache.misses !== 1 ? "es" : ""}
+                </span>
+                <span className="text-[hsl(var(--muted-foreground))]">·</span>
+                <span className="text-[hsl(var(--foreground))] font-medium tabular-nums">
+                  {pct(benchmark.cache.hitRate)} hit rate
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Quorum Details */}
           {benchmark.quorumDetails && (
             <div>

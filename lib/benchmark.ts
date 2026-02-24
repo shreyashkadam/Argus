@@ -3,6 +3,7 @@ import path from "path";
 import { type ResearchState, type SessionBenchmark } from "@/lib/schemas";
 import { type QuorumDetails } from "@/lib/agents/types";
 import { verifyQuotesAgainstRawContent } from "@/lib/agents/skeptic";
+import { isRedisAvailable } from "@/lib/redis";
 
 const BENCHMARKS_DIR = path.join(process.cwd(), "benchmarks");
 const HISTORY_FILE = path.join(BENCHMARKS_DIR, "history.json");
@@ -60,6 +61,11 @@ export function captureBenchmark(
     ? quorumDetails.modelsUsed
     : ["grok"];
 
+  const cacheHits = metricsSnapshot["cache_hits"] ?? 0;
+  const cacheMisses = metricsSnapshot["cache_misses"] ?? 0;
+  const cacheTotal = cacheHits + cacheMisses;
+  const cacheEnabled = isRedisAvailable();
+
   return {
     id: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
@@ -97,6 +103,12 @@ export function captureBenchmark(
     iterations: state.iterations,
     llmCalls,
     quorumDetails: quorumDetails ?? undefined,
+    cache: {
+      hits: cacheHits,
+      misses: cacheMisses,
+      hitRate: cacheTotal > 0 ? cacheHits / cacheTotal : 0,
+      enabled: cacheEnabled,
+    },
     traceStepCount: steps.length,
     metricsSnapshot,
   };

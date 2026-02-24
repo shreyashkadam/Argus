@@ -57,6 +57,13 @@ const BenchmarkQuorumDetailsSchema = z.object({
   perModelStats: z.array(QuorumPerModelStatsSchema),
 });
 
+const BenchmarkCacheSchema = z.object({
+  hits: z.number().int().nonnegative(),
+  misses: z.number().int().nonnegative(),
+  hitRate: z.number().min(0).max(1),
+  enabled: z.boolean(),
+});
+
 export const SessionBenchmarkSchema = z.object({
   id: z.string().uuid(),
   timestamp: z.string().datetime(),
@@ -70,6 +77,7 @@ export const SessionBenchmarkSchema = z.object({
   iterations: z.number().int().nonnegative(),
   llmCalls: z.number().int().nonnegative(),
   quorumDetails: BenchmarkQuorumDetailsSchema.optional(),
+  cache: BenchmarkCacheSchema.optional(),
   traceStepCount: z.number().int().nonnegative(),
   metricsSnapshot: z.record(z.string(), z.number()),
 });
